@@ -1,0 +1,17 @@
+README.md
+setup.py
+aws_psycopg2.egg-info/PKG-INFO
+aws_psycopg2.egg-info/SOURCES.txt
+aws_psycopg2.egg-info/dependency_links.txt
+aws_psycopg2.egg-info/top_level.txt
+psycopg2/__init__.py
+psycopg2/_ipaddress.py
+psycopg2/_json.py
+psycopg2/_range.py
+psycopg2/errorcodes.py
+psycopg2/extensions.py
+psycopg2/extras.py
+psycopg2/pool.py
+psycopg2/psycopg1.py
+psycopg2/sql.py
+psycopg2/tz.py
