@@ -30,10 +30,7 @@ import sys as _sys
 import time as _time
 import re as _re
 
-try:
-    import logging as _logging
-except:
-    _logging = None
+import logging as _logging
 
 import psycopg2
 from psycopg2 import extensions as _ext
@@ -189,7 +186,7 @@ class DictRow(list):
     def get(self, x, default=None):
         try:
             return self[x]
-        except:
+        except Exception:
             return default
 
     def iteritems(self):
@@ -368,7 +365,21 @@ class NamedTupleCursor(_cursor):
             raise self._exc
     else:
         def _make_nt(self, namedtuple=namedtuple):
-            return namedtuple("Record", [d[0] for d in self.description or ()])
+            # ascii except alnum and underscore
+            nochars = ' !"#$%&\'()*+,-./:;<=>?@[\\]^`{|}~'
+            re_clean = _re.compile('[' + _re.escape(nochars) + ']')
+
+            def f(s):
+                s = re_clean.sub('_', s)
+                # Python identifier cannot start with numbers, namedtuple fields
+                # cannot start with underscore. So...
+                if s[0] == '_' or '0' <= s[0] <= '9':
+                    s = 'f' + s
+
+                return s
+
+            return namedtuple(
+                "Record", [f(d[0]) for d in self.description or ()])
 
 
 class LoggingConnection(_connection):
@@ -455,6 +466,8 @@ class MinTimeLoggingConnection(LoggingConnection):
     def filter(self, msg, curs):
         t = (_time.time() - curs.timestamp) * 1000
         if t > self._mintime:
+            if _sys.version_info[0] >= 3 and isinstance(msg, bytes):
+                msg = msg.decode(_ext.encodings[self.encoding], 'replace')
             return msg + _os.linesep + "  (execution time: %d ms)" % t
 
     def cursor(self, *args, **kwargs):
@@ -739,8 +752,8 @@ def wait_select(conn):
 
     The function is an example of a wait callback to be registered with
     `~psycopg2.extensions.set_wait_callback()`. This function uses
-    :py:func:`~select.select()` to wait for data available.
-
+    :py:func:`~select.select()` to wait for data to become available, and
+    therefore is able to handle/receive SIGINT/KeyboardInterrupt.
     """
     import select
     from psycopg2.extensions import POLL_OK, POLL_READ, POLL_WRITE
@@ -1178,6 +1191,9 @@ def execute_batch(cur, sql, argslist, page_size=100):
     fewer multi-statement commands, each one containing at most *page_size*
     statements, resulting in a reduced number of server roundtrips.
 
+    After the execution of the function the `cursor.rowcount` property will
+    **not** contain a total result.
+
     """
     for page in _paginate(argslist, page_size=page_size):
         sqls = [cur.mogrify(sql, args) for args in page]
@@ -1198,10 +1214,15 @@ def execute_values(cur, sql, argslist, template=None, page_size=100):
         *template*.
 
     :param template: the snippet to merge to every item in *argslist* to
-        compose the query. If *argslist* items are sequences it should contain
-        positional placeholders (e.g. ``"(%s, %s, %s)"``, or ``"(%s, %s, 42)``"
-        if there are constants value...); If *argslist* is items are mapping
-        it should contain named placeholders (e.g. ``"(%(id)s, %(f1)s, 42)"``).
+        compose the query.
+
+        - If the *argslist* items are sequences it should contain positional
+          placeholders (e.g. ``"(%s, %s, %s)"``, or ``"(%s, %s, 42)``" if there
+          are constants value...).
+
+        - If the *argslist* items are mappings it should contain named
+          placeholders (e.g. ``"(%(id)s, %(f1)s, 42)"``).
+
         If not specified, assume the arguments are sequence and use a simple
         positional template (i.e.  ``(%s, %s, ...)``), with the number of
         placeholders sniffed by the first element in *argslist*.
@@ -1211,6 +1232,9 @@ def execute_values(cur, sql, argslist, template=None, page_size=100):
         one statement.
 
     .. __: https://www.postgresql.org/docs/current/static/queries-values.html
+
+    After the execution of the function the `cursor.rowcount` property will
+    **not** contain a total result.
 
     While :sql:`INSERT` is an obvious candidate for this function it is
     possible to use it with other statements, for example::
@@ -1232,6 +1256,10 @@ def execute_values(cur, sql, argslist, template=None, page_size=100):
         [(1, 20, 3), (4, 50, 6), (7, 8, 9)])
 
     '''
+    from psycopg2.sql import Composable
+    if isinstance(sql, Composable):
+        sql = sql.as_string(cur)
+
     # we can't just use sql % vals because vals is bytes: if sql is bytes
     # there will be some decoding error because of stupid codec used, and Py3
     # doesn't implement % on bytes.

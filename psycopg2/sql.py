@@ -1,7 +1,7 @@
 """SQL composition utility module
 """
 
-# psycopg/sql.py - Implementation of the JSON adaptation objects
+# psycopg/sql.py - SQL composition utility module
 #
 # Copyright (C) 2016 Daniele Varrazzo  <daniele.varrazzo@gmail.com>
 #
@@ -36,8 +36,9 @@ class Composable(object):
     """
     Abstract base class for objects that can be used to compose an SQL string.
 
-    `!Composable` objects can be passed directly to `~cursor.execute()` and
-    `~cursor.executemany()` in place of the query string.
+    `!Composable` objects can be passed directly to `~cursor.execute()`,
+    `~cursor.executemany()`, `~cursor.copy_expert()` in place of the query
+    string.
 
     `!Composable` objects can be joined using the ``+`` operator: the result
     will be a `Composed` instance containing the objects joined. The operator
@@ -58,9 +59,9 @@ class Composable(object):
         :param context: the context to evaluate the string into.
         :type context: `connection` or `cursor`
 
-        The method is automatically invoked by `~cursor.execute()` and
-        `~cursor.executemany()` if a `!Composable` is passed instead of the
-        query string.
+        The method is automatically invoked by `~cursor.execute()`,
+        `~cursor.executemany()`, `~cursor.copy_expert()` if a `!Composable` is
+        passed instead of the query string.
         """
         raise NotImplementedError
 
@@ -84,11 +85,11 @@ class Composable(object):
 
 class Composed(Composable):
     """
-    A `Composable` object made of a sequence of `Composable`.
+    A `Composable` object made of a sequence of `!Composable`.
 
-    The object is usually created using `Composable` operators and methods.
+    The object is usually created using `!Composable` operators and methods.
     However it is possible to create a `!Composed` directly specifying a
-    sequence of `Composable` as arguments.
+    sequence of `!Composable` as arguments.
 
     Example::
 
@@ -290,9 +291,9 @@ class Identifier(Composable):
     """
     A `Composable` representing an SQL identifer.
 
-    Identifiers usually represent names of database objects, such as tables
-    or fields. They follow `different rules`__ than SQL string literals for
-    escaping (e.g. they use double quotes).
+    Identifiers usually represent names of database objects, such as tables or
+    fields. PostgreSQL identifiers follow `different rules`__ than SQL string
+    literals for escaping (e.g. they use double quotes instead of single).
 
     .. __: https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html# \
         SQL-SYNTAX-IDENTIFIERS

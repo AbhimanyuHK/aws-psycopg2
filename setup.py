@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aws-psycopg2",
-    version="1.0.1",
+    version="1.1.0",
     author="Abhimanyu HK",
     author_email="manyu1994@hotmail.com",
     description="A aws psycopg2 package from psycopg2.",
