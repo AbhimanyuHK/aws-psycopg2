@@ -3,7 +3,7 @@
 
 # psycopg/sql.py - SQL composition utility module
 #
-# Copyright (C) 2016 Daniele Varrazzo  <daniele.varrazzo@gmail.com>
+# Copyright (C) 2016-2019 Daniele Varrazzo  <daniele.varrazzo@gmail.com>
 #
 # psycopg2 is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published
@@ -23,10 +23,10 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 # License for more details.
 
-import sys
 import string
 
 from psycopg2 import extensions as ext
+from psycopg2.compat import PY3, string_types
 
 
 _formatter = string.Formatter()
@@ -147,7 +147,7 @@ class Composed(Composable):
             "foo", "bar"
 
         """
-        if isinstance(joiner, str):
+        if isinstance(joiner, string_types):
             joiner = SQL(joiner)
         elif not isinstance(joiner, SQL):
             raise TypeError(
@@ -179,7 +179,7 @@ class SQL(Composable):
         select "foo", "bar" from "table"
     """
     def __init__(self, string):
-        if not isinstance(string, str):
+        if not isinstance(string, string_types):
             raise TypeError("SQL values must be strings")
         super(SQL, self).__init__(string)
 
@@ -203,12 +203,12 @@ class SQL(Composable):
         :rtype: `Composed`
 
         The method is similar to the Python `str.format()` method: the string
-        template supports auto-numbered (``{}``, only available from Python
-        2.7), numbered (``{0}``, ``{1}``...), and named placeholders
-        (``{name}``), with positional arguments replacing the numbered
-        placeholders and keywords replacing the named ones. However placeholder
-        modifiers (``{0!r}``, ``{0:<10}``) are not supported. Only
-        `!Composable` objects can be passed to the template.
+        template supports auto-numbered (``{}``), numbered (``{0}``,
+        ``{1}``...), and named placeholders (``{name}``), with positional
+        arguments replacing the numbered placeholders and keywords replacing
+        the named ones. However placeholder modifiers (``{0!r}``, ``{0:<10}``)
+        are not supported. Only `!Composable` objects can be passed to the
+        template.
 
         Example::
 
@@ -289,7 +289,7 @@ class SQL(Composable):
 
 class Identifier(Composable):
     """
-    A `Composable` representing an SQL identifer.
+    A `Composable` representing an SQL identifier or a dot-separated sequence.
 
     Identifiers usually represent names of database objects, such as tables or
     fields. PostgreSQL identifiers follow `different rules`__ than SQL string
@@ -306,20 +306,50 @@ class Identifier(Composable):
         >>> print(sql.SQL(', ').join([t1, t2, t3]).as_string(conn))
         "foo", "ba'r", "ba""z"
 
-    """
-    def __init__(self, string):
-        if not isinstance(string, str):
-            raise TypeError("SQL identifiers must be strings")
+    Multiple strings can be passed to the object to represent a qualified name,
+    i.e. a dot-separated sequence of identifiers.
 
-        super(Identifier, self).__init__(string)
+    Example::
+
+        >>> query = sql.SQL("select {} from {}").format(
+        ...     sql.Identifier("table", "field"),
+        ...     sql.Identifier("schema", "table"))
+        >>> print(query.as_string(conn))
+        select "table"."field" from "schema"."table"
+
+    """
+    def __init__(self, *strings):
+        if not strings:
+            raise TypeError("Identifier cannot be empty")
+
+        for s in strings:
+            if not isinstance(s, string_types):
+                raise TypeError("SQL identifier parts must be strings")
+
+        super(Identifier, self).__init__(strings)
+
+    @property
+    def strings(self):
+        """A tuple with the strings wrapped by the `Identifier`."""
+        return self._wrapped
 
     @property
     def string(self):
-        """The string wrapped by the `Identifier`."""
-        return self._wrapped
+        """The string wrapped by the `Identifier`.
+        """
+        if len(self._wrapped) == 1:
+            return self._wrapped[0]
+        else:
+            raise AttributeError(
+                "the Identifier wraps more than one than one string")
+
+    def __repr__(self):
+        return "%s(%s)" % (
+            self.__class__.__name__,
+            ', '.join(map(repr, self._wrapped)))
 
     def as_string(self, context):
-        return ext.quote_ident(self._wrapped, context)
+        return '.'.join(ext.quote_ident(s, context) for s in self._wrapped)
 
 
 class Literal(Composable):
@@ -361,7 +391,7 @@ class Literal(Composable):
             a.prepare(conn)
 
         rv = a.getquoted()
-        if sys.version_info[0] >= 3 and isinstance(rv, bytes):
+        if PY3 and isinstance(rv, bytes):
             rv = rv.decode(ext.encodings[conn.encoding])
 
         return rv
@@ -395,7 +425,7 @@ class Placeholder(Composable):
     """
 
     def __init__(self, name=None):
-        if isinstance(name, str):
+        if isinstance(name, string_types):
             if ')' in name:
                 raise ValueError("invalid name: %r" % name)
 

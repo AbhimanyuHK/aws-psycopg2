@@ -1,12 +1,11 @@
 import setuptools
-from distutils.core import Extension
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="aws-psycopg2",
-    version="1.1.0",
+    version="1.2.0",
     author="Abhimanyu HK",
     author_email="manyu1994@hotmail.com",
     description="A aws psycopg2 package from psycopg2.",
