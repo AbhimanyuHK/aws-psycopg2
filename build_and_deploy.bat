@@ -1,8 +1,8 @@
 @echo off
 
-del psycopg2 y
+del psycopg2
 
-pip install psycopg2 -t . --upgrade
+pip install psycopg2-binary -t . --upgrade
 
 python setup.py sdist bdist_wheel
 

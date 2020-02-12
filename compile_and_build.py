@@ -55,4 +55,4 @@ if __name__ == '__main__':
     versions("psycopg2-binary")
     # versions("psycopg2")
     build_wheel()
-    shutil.rmtree("new")
+    # shutil.rmtree("new")

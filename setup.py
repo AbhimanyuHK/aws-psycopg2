@@ -3,9 +3,12 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("version.txt", "r") as fv:
+    version = fv.read().strip()
+
 setuptools.setup(
     name="aws-psycopg2",
-    version="1.2.0",
+    version=version,
     author="Abhimanyu HK",
     author_email="manyu1994@hotmail.com",
     description="A aws psycopg2 package from psycopg2.",
