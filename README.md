@@ -11,6 +11,29 @@ libpq library instead of the default dynamic link.
 
 ``` pip install aws-psycopg2 ```
 
+#### Enabling SSL Encyrption in Flight
+
+Current AWS [RDS Combined Certificate Authority 2019](https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem) SSL (*.pem) file is now included in this package for easy implementation of `sslmode=verify-ca`.
+
+```python
+import os
+
+import psycopg2
+
+conn = psycopg2.connect(
+  dbname='yourdb',
+  user='dbuser',
+  password='notReal',
+  host='db.example.org',
+  port=5432,
+  sslmode='verify-ca',
+  sslrootcert=os.path.join(
+    os.path.dirname(__file__),
+    'rds-combined-ca-bundle.pem'
+  ),
+)
+```
+
 ### Source code : https://github.com/AbhimanyuHK/aws-psycopg2 
 
 ### Instructions on compiling this package from scratch
