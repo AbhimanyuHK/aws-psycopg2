@@ -1,6 +1,5 @@
 import json
 import os
-import shutil
 from urllib import request
 from zipfile import ZipFile
 
