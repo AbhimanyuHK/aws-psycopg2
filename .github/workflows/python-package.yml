@@ -33,7 +33,7 @@ jobs:
         if [ -f requirements_test.txt ]; then pip install -U -r requirements_test.txt; fi
     - name: List Directory
       run: |
-        ls -l psycopg2
+        ls -l
     - name: Test with pytest
       run: |
         pytest
