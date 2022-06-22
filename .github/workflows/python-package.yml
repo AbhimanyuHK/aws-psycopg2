@@ -27,8 +27,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install aws-psycopg2 -t .
-        if [ -f requirements_test.txt ]; then pip install -r requirements_test.txt; fi
+        python -m pip install aws-psycopg2 -t . -U
+        if [ -f requirements_test.txt ]; then pip install -U -r requirements_test.txt; fi
+    - name: List Directory
+      run: |
+        ls -l psycopg2
     - name: Test with pytest
       run: |
         pytest
