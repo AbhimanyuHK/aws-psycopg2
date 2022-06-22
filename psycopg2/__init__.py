@@ -6,7 +6,7 @@ provide new-style classes for connection and cursor objects and other sweet
 candies. Like the original, psycopg 2 was written with the aim of being very
 small and fast, and stable as a rock.
 
-Homepage: http://initd.org/projects/psycopg2
+Homepage: https://psycopg.org/
 
 .. _PostgreSQL: https://www.postgresql.org/
 .. _Python: https://www.python.org/
@@ -19,6 +19,7 @@ Homepage: http://initd.org/projects/psycopg2
 # psycopg/__init__.py - initialization of the psycopg module
 #
 # Copyright (C) 2003-2019 Federico Di Gregorio  <fog@debian.org>
+# Copyright (C) 2020-2021 The Psycopg Team
 #
 # psycopg2 is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published
@@ -59,8 +60,6 @@ from psycopg2._psycopg import (                     # noqa
     _connect, apilevel, threadsafety, paramstyle,
     __version__, __libpq_version__,
 )
-
-from psycopg2 import tz                             # noqa
 
 
 # Register default adapters.
@@ -118,9 +117,6 @@ def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
         kwasync['async'] = kwargs.pop('async')
     if 'async_' in kwargs:
         kwasync['async_'] = kwargs.pop('async_')
-
-    if dsn is None and not kwargs:
-        raise TypeError('missing dsn and no parameters')
 
     dsn = _ext.make_dsn(dsn, **kwargs)
     conn = _connect(dsn, connection_factory=connection_factory, **kwasync)

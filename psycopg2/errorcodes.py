@@ -1,10 +1,11 @@
-"""Error codes for PostgresSQL
+"""Error codes for PostgreSQL
 
 This module contains symbolic names for all PostgreSQL error codes.
 """
 # psycopg2/errorcodes.py - PostgreSQL error codes
 #
 # Copyright (C) 2006-2019 Johan Dahlin  <jdahlin@async.com.br>
+# Copyright (C) 2020-2021 The Psycopg Team
 #
 # psycopg2 is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published
@@ -42,7 +43,8 @@ def lookup(code, _cache={}):
     tmp = {}
     for k, v in globals().items():
         if isinstance(v, str) and len(v) in (2, 5):
-            tmp[v] = k
+            # Strip trailing underscore used to disambiguate duplicate values
+            tmp[v] = k.rstrip("_")
 
     assert tmp
 
@@ -105,7 +107,7 @@ SUCCESSFUL_COMPLETION = '00000'
 # Class 01 - Warning
 WARNING = '01000'
 NULL_VALUE_ELIMINATED_IN_SET_FUNCTION = '01003'
-STRING_DATA_RIGHT_TRUNCATION = '01004'
+STRING_DATA_RIGHT_TRUNCATION_ = '01004'
 PRIVILEGE_NOT_REVOKED = '01006'
 PRIVILEGE_NOT_GRANTED = '01007'
 IMPLICIT_ZERO_BIT_PADDING = '01008'
@@ -163,7 +165,7 @@ DATA_EXCEPTION = '22000'
 STRING_DATA_RIGHT_TRUNCATION = '22001'
 NULL_VALUE_NO_INDICATOR_PARAMETER = '22002'
 NUMERIC_VALUE_OUT_OF_RANGE = '22003'
-NULL_VALUE_NOT_ALLOWED = '22004'
+NULL_VALUE_NOT_ALLOWED_ = '22004'
 ERROR_IN_ASSIGNMENT = '22005'
 INVALID_DATETIME_FORMAT = '22007'
 DATETIME_FIELD_OVERFLOW = '22008'
@@ -206,6 +208,7 @@ ARRAY_SUBSCRIPT_ERROR = '2202E'
 INVALID_TABLESAMPLE_REPEAT = '2202G'
 INVALID_TABLESAMPLE_ARGUMENT = '2202H'
 DUPLICATE_JSON_OBJECT_KEY_VALUE = '22030'
+INVALID_ARGUMENT_FOR_SQL_JSON_DATETIME_FUNCTION = '22031'
 INVALID_JSON_TEXT = '22032'
 INVALID_SQL_JSON_SUBSCRIPT = '22033'
 MORE_THAN_ONE_SQL_JSON_ITEM = '22034'
@@ -272,9 +275,9 @@ INVALID_TRANSACTION_TERMINATION = '2D000'
 
 # Class 2F - SQL Routine Exception
 SQL_ROUTINE_EXCEPTION = '2F000'
-MODIFYING_SQL_DATA_NOT_PERMITTED = '2F002'
-PROHIBITED_SQL_STATEMENT_ATTEMPTED = '2F003'
-READING_SQL_DATA_NOT_PERMITTED = '2F004'
+MODIFYING_SQL_DATA_NOT_PERMITTED_ = '2F002'
+PROHIBITED_SQL_STATEMENT_ATTEMPTED_ = '2F003'
+READING_SQL_DATA_NOT_PERMITTED_ = '2F004'
 FUNCTION_EXECUTED_NO_RETURN_STATEMENT = '2F005'
 
 # Class 34 - Invalid Cursor Name
@@ -388,6 +391,7 @@ ADMIN_SHUTDOWN = '57P01'
 CRASH_SHUTDOWN = '57P02'
 CANNOT_CONNECT_NOW = '57P03'
 DATABASE_DROPPED = '57P04'
+IDLE_SESSION_TIMEOUT = '57P05'
 
 # Class 58 - System Error (errors external to PostgreSQL itself)
 SYSTEM_ERROR = '58000'

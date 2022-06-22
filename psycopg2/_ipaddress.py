@@ -4,6 +4,7 @@
 # psycopg/_ipaddress.py - Ipaddres-based network types adaptation
 #
 # Copyright (C) 2016-2019 Daniele Varrazzo  <daniele.varrazzo@gmail.com>
+# Copyright (C) 2020-2021 The Psycopg Team
 #
 # psycopg2 is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published
@@ -25,7 +26,6 @@
 
 from psycopg2.extensions import (
     new_type, new_array_type, register_type, register_adapter, QuotedString)
-from psycopg2.compat import text_type
 
 # The module is imported on register_ipaddress
 ipaddress = None
@@ -77,13 +77,13 @@ def cast_interface(s, cur=None):
     if s is None:
         return None
     # Py2 version force the use of unicode. meh.
-    return ipaddress.ip_interface(text_type(s))
+    return ipaddress.ip_interface(str(s))
 
 
 def cast_network(s, cur=None):
     if s is None:
         return None
-    return ipaddress.ip_network(text_type(s))
+    return ipaddress.ip_network(str(s))
 
 
 def adapt_ipaddress(obj):

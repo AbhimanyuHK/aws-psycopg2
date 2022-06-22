@@ -13,6 +13,7 @@ This module holds all the extensions to the DBAPI-2.0 provided by psycopg.
 # psycopg/extensions.py - DBAPI-2.0 extensions specific to psycopg
 #
 # Copyright (C) 2003-2019 Federico Di Gregorio  <fog@debian.org>
+# Copyright (C) 2020-2021 The Psycopg Team
 #
 # psycopg2 is free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published
@@ -40,14 +41,6 @@ from psycopg2._psycopg import (                             # noqa
     INTEGERARRAY, INTERVAL, INTERVALARRAY, LONGINTEGER, LONGINTEGERARRAY,
     ROWIDARRAY, STRINGARRAY, TIME, TIMEARRAY, UNICODE, UNICODEARRAY,
     AsIs, Binary, Boolean, Float, Int, QuotedString, )
-
-try:
-    from psycopg2._psycopg import (                         # noqa
-        MXDATE, MXDATETIME, MXDATETIMETZ, MXINTERVAL, MXTIME, MXDATEARRAY,
-        MXDATETIMEARRAY, MXDATETIMETZARRAY, MXINTERVALARRAY, MXTIMEARRAY,
-        DateFromMx, TimeFromMx, TimestampFromMx, IntervalFromMx, )
-except ImportError:
-    pass
 
 from psycopg2._psycopg import (                         # noqa
     PYDATE, PYDATETIME, PYDATETIMETZ, PYINTERVAL, PYTIME, PYDATEARRAY,
@@ -105,7 +98,7 @@ def register_adapter(typ, callable):
 
 
 # The SQL_IN class is the official adapter for tuples starting from 2.0.6.
-class SQL_IN(object):
+class SQL_IN:
     """Adapt any iterable to an SQL quotable object."""
     def __init__(self, seq):
         self._seq = seq
@@ -129,7 +122,7 @@ class SQL_IN(object):
         return str(self.getquoted())
 
 
-class NoneAdapter(object):
+class NoneAdapter:
     """Adapt None to NULL.
 
     This adapter is not used normally as a fast path in mogrify uses NULL,
@@ -167,7 +160,7 @@ def make_dsn(dsn=None, **kwargs):
         tmp.update(kwargs)
         kwargs = tmp
 
-    dsn = " ".join(["%s=%s" % (k, _param_escape(str(v)))
+    dsn = " ".join(["{}={}".format(k, _param_escape(str(v)))
         for (k, v) in kwargs.items()])
 
     # verify that the returned dsn is valid
