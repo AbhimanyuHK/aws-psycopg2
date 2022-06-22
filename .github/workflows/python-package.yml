@@ -24,10 +24,12 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Clean Directory
+      run: |
+        rm -rf psycopg2
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install aws-psycopg2 -t . -U
         if [ -f requirements_test.txt ]; then pip install -U -r requirements_test.txt; fi
     - name: List Directory
       run: |
