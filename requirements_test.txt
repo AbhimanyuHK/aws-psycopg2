@@ -1,1 +1,3 @@
 sqlalchemy
+aws-psycopg2
+pytest
