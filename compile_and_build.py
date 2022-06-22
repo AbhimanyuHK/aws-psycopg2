@@ -49,9 +49,10 @@ def build_wheel():
     dist_path = [x for x in os.listdir(os.path.abspath("dist")) if x.endswith(".whl")][0]
     with ZipFile("dist/{}".format(dist_path), mode='a') as bz:
         for x in [os.path.join(path, name) for path, subdirs, files in os.walk(BIN_PATH) for name in files]:
-            original_file = x.lstrip(BIN_PATH).lstrip('\\')
+            original_file = x.lstrip(BIN_PATH).lstrip('\\').lstrip("/")
             if "psycopg2_binary.libs" in x:
                 bz.write(x, arcname="{}".format(original_file))
+                bz.write(x, arcname="psycopg2/{}".format(original_file.replace("psycopg2_binary.libs/", "")))
             else:
                 bz.write(x, arcname="psycopg2/{}".format(original_file))
 
