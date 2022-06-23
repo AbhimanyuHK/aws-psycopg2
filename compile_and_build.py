@@ -53,7 +53,8 @@ def build_wheel():
             if "psycopg2_binary.libs" in x:
                 # bz.write(x, arcname="{}".format(original_file))
                 # bz.write(x, arcname="psycopg2/{}".format(original_file.replace("psycopg2_binary.libs/", "")))
-                bz.write(x, arcname="psycopg2/.libs/{}".format(original_file.replace("psycopg2_binary.libs/", "")))
+                fn = original_file.replace("psycopg2_binary.libs", "").replace("\\", "").replace("/", "")
+                bz.write(x, arcname="psycopg2/.libs/{}".format(fn))
             else:
                 bz.write(x, arcname="psycopg2/{}".format(original_file))
 
