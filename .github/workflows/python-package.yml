@@ -4,10 +4,8 @@
 name: Python package
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  release:
+    types: [ published ]
 
 jobs:
   build:
@@ -31,6 +29,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements_test.txt ]; then pip install -U -r requirements_test.txt; fi
+        python -m pip install --index-url https://test.pypi.org/simple/ aws-psycopg2 -U
     - name: List Directory
       run: |
         ls -l
