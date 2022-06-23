@@ -72,6 +72,6 @@ if __name__ == '__main__':
         os.makedirs("{}/{}".format(BIN_PATH, "psycopg2_binary.libs"))
 
     versions("psycopg2-binary")
-    versions("psycopg2")
+    # versions("psycopg2")
     build_wheel()
     # shutil.rmtree("new")
