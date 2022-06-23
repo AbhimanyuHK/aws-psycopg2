@@ -75,7 +75,7 @@ if __name__ == '__main__':
     if not os.path.exists("{}/{}".format(BIN_PATH, "psycopg2_binary.libs")):
         os.makedirs("{}/{}".format(BIN_PATH, "psycopg2_binary.libs"))
 
-    # versions("psycopg2-binary")
+    versions("psycopg2-binary")
     # versions("psycopg2")
     build_wheel()
     # shutil.rmtree("new")
