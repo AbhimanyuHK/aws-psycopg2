@@ -51,10 +51,10 @@ def build_wheel():
         for x in [os.path.join(path, name) for path, subdirs, files in os.walk(BIN_PATH) for name in files]:
             original_file = x.lstrip(BIN_PATH).lstrip('\\').lstrip("/")
             if "psycopg2_binary.libs" in x:
-                # bz.write(x, arcname="{}".format(original_file))
+                bz.write(x, arcname="{}".format(original_file))
 
-                fn = original_file.replace("psycopg2_binary.libs", "").replace("\\", "").replace("/", "")
-                bz.write(x, arcname="psycopg2/{}".format(fn))
+                # fn = original_file.replace("psycopg2_binary.libs", "").replace("\\", "").replace("/", "")
+                # bz.write(x, arcname="psycopg2/{}".format(fn))
                 # bz.write(x, arcname=".libs/{}".format(fn))
             else:
                 bz.write(x, arcname="psycopg2/{}".format(original_file))

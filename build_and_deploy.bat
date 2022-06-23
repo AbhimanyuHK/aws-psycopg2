@@ -2,7 +2,7 @@
 
 del psycopg2
 
-pip install psycopg2-binary -t . --upgrade
+pip install psycopg2 -t . --upgrade
 
 python setup.py sdist bdist_wheel
 
