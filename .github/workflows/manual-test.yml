@@ -46,5 +46,11 @@ jobs:
         ls -l
         ls -l psycopg2
     - name: Test with pytest
+      env:
+        USER_NAME: ${{ secrets.USER_NAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        HOST: ${{ secrets.HOST }}
+        DATABASE: ${{ secrets.DATABASE }}
+        PORT: ${{ secrets.PORT }}
       run: |
         pytest

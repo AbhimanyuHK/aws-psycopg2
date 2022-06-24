@@ -1,13 +1,15 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 
 class DBCredentials:
-    USER_NAME = "wmwdzyoyztsualmsltixhokb@psql-mock-database-cloud"
-    PASSWORD = "wsennjbxxoeujgiqokjrauoe"
-    HOST = "psql-mock-database-cloud.postgres.database.azure.com"
-    PORT = 5432
-    DATABASE = "booking1655908236603nquuluocnxjrdpal"
+    USER_NAME = os.environ["USER_NAME"]
+    PASSWORD = os.environ["PASSWORD"]
+    HOST = os.environ["HOST"]
+    PORT = os.environ["PORT"] or 5432
+    DATABASE = os.environ["DATABASE"]
 
 
 class Singleton(type):
