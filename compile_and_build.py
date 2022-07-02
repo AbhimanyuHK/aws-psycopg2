@@ -28,6 +28,8 @@ def versions(pkg_name):
         new_file_name = "new/{}".format(file_name.split("/")[-1])
         if new_file_name.endswith(".tar.gz"):
             continue
+        if not ("2_17" in new_file_name or "2_24" in new_file_name):
+            continue
         request.urlretrieve(file_name, new_file_name)
 
         z = ZipFile(new_file_name)
