@@ -28,15 +28,17 @@ def versions(pkg_name):
         new_file_name = "new/{}".format(file_name.split("/")[-1])
         if new_file_name.endswith(".tar.gz"):
             continue
-        if not ("2_17" in new_file_name or "2_24" in new_file_name):
+        if not (
+                "2_17" in new_file_name or "2_24" in new_file_name or "win" in new_file_name or "macosx" in new_file_name
+        ):
             continue
         request.urlretrieve(file_name, new_file_name)
-
+        print(new_file_name)
         z = ZipFile(new_file_name)
         x_list = [
             y for y in z.namelist() if is_valid_file(y)
         ]
-        print(x_list)
+        # print(x_list)
 
         for x_file in x_list:
             with z.open(x_file) as myfile:
@@ -47,18 +49,13 @@ def versions(pkg_name):
 
 
 def build_wheel():
-    print(os.listdir(os.path.abspath(BIN_PATH)))
+    # print(os.listdir(os.path.abspath(BIN_PATH)))
     dist_path = [x for x in os.listdir(os.path.abspath("dist")) if x.endswith(".whl")][0]
     with ZipFile("dist/{}".format(dist_path), mode='a') as bz:
         for x in [os.path.join(path, name) for path, subdirs, files in os.walk(BIN_PATH) for name in files]:
             original_file = x.lstrip(BIN_PATH).lstrip('\\').lstrip("/")
             if "psycopg2_binary.libs" in x:
                 bz.write(x, arcname="{}".format(original_file))
-
-                # fn = original_file.replace("psycopg2_binary.libs", "").replace("\\", "").replace("/", "")
-                # bz.write(x, arcname="psycopg2/{}".format(fn))
-                # bz.write(x, arcname=".libs/{}".format(fn))
-                # bz.write(x, arcname="psycopg2.libs/{}".format(fn))
             else:
                 bz.write(x, arcname="psycopg2/{}".format(original_file))
 
