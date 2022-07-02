@@ -9,10 +9,8 @@
 name: Upload Python Package
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  release:
+    types: [ published ]
 
 permissions:
   contents: read
@@ -39,7 +37,7 @@ jobs:
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
-    - name: Added Extras to Build package 
+    - name: Added Extras to Build package
       run: |
         python compile_and_build.py
     - name: Publish package
@@ -47,4 +45,4 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload --repository testpypi dist/*
+        twine upload dist/*
