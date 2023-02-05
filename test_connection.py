@@ -2,6 +2,7 @@ import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
 
 
 class DBCredentials:
@@ -40,6 +41,6 @@ class DBConfig(metaclass=Singleton):
 def test_list_table_names():
     session = DBConfig().connection()
 
-    for x in session.execute("""SELECT * FROM "pg_catalog"."pg_tables" """).all():
+    for x in session.execute(text('SELECT * FROM "pg_catalog"."pg_tables" ')).all():
         print(x)
         assert x is not None
