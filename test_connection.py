@@ -40,6 +40,6 @@ class DBConfig(metaclass=Singleton):
 def test_list_table_names():
     session = DBConfig().connection()
 
-    for x in session.execute("""SELECT * FROM pg_catalog.pg_tables""").all():
+    for x in session.execute("""SELECT * FROM "pg_catalog"."pg_tables" """).all():
         print(x)
         assert x is not None
