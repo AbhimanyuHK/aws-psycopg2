@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/AWS-Psycopg2.iml" filepath="$PROJECT_DIR$/.idea/AWS-Psycopg2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Magani-Stack/magani/.idea/magani.iml" filepath="$PROJECT_DIR$/../Magani-Stack/magani/.idea/magani.iml" />
     </modules>
   </component>
 </project>
