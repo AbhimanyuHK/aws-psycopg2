@@ -46,7 +46,7 @@ jobs:
         python -m pip install psycopg2-binary -t . --upgrade
     - name: Alter Test Version
       run: |
-        echo ${{ github.event.inputs.inputs }} > version.txt
+        echo ${{ github.event.inputs.test_version }} > version.txt
     - name: Build package
       run: |
         python setup.py sdist bdist_wheel
