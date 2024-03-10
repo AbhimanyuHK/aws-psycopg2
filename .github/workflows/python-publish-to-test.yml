@@ -8,11 +8,23 @@
 
 name: Upload Python Package to Test Env
 
+# on:
+#   push:
+#     branches: [ "master" ]
+#   pull_request:
+#     branches: [ "master" ]
+
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      test_version:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Test deploy Version'
+        # Default value if no value is explicitly provided
+        default: '1.3.9.dev'
+        # Input has to be provided for the workflow to run
+        required: true
 
 permissions:
   contents: read
